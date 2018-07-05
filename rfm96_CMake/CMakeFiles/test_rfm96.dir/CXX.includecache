@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/pi/ThomasThong/rfm96/src/LoRa.cpp
+LoRa.h
+-
+
+inc/LoRa.h
+cstdlib
+-
+wiringPi.h
+-
+

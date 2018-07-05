@@ -1,0 +1,1 @@
+/usr/bin/cc     CMakeFiles/test.dir/src/radio.c.o CMakeFiles/test.dir/src/sx1261dvk1bas-board.c.o CMakeFiles/test.dir/src/sx126x.c.o  -o test -rdynamic 

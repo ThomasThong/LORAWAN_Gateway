@@ -1,0 +1,3 @@
+/home/pi/ThomasThong/rfm96/CMakeFiles/rebuild_cache.dir
+/home/pi/ThomasThong/rfm96/CMakeFiles/edit_cache.dir
+/home/pi/ThomasThong/rfm96/CMakeFiles/test_rfm96.dir
