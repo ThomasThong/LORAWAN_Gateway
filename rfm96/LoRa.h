@@ -5,10 +5,9 @@
 #define LORA_H
 
 #include <cstdint>
-#include <stdio.h>
+#include <iostream>
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
-#include <sys/ioctl.h>
 #include <sys/ioctl.h>
 #include <linux/spi/spidev.h>
 #include <fcntl.h>
@@ -18,9 +17,9 @@ using namespace std;
 
 typedef unsigned char byte;
 #define LORA_DEFAULT_SPI_FREQUENCY 1E6 
-#define LORA_DEFAULT_SS_PIN        10
-#define LORA_DEFAULT_RESET_PIN     9
-#define LORA_DEFAULT_DIO0_PIN      2
+#define LORA_DEFAULT_SS_PIN        3
+#define LORA_DEFAULT_RESET_PIN     2
+#define LORA_DEFAULT_DIO0_PIN      0
 #define CHANNEL			   0
 
 #define PA_OUTPUT_RFO_PIN          0

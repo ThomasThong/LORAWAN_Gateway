@@ -62,7 +62,12 @@ LoRaClass::LoRaClass() :
 {
   // overide Stream timeout value
   wiringPiSetup();
-  wiringPiSPISetup(CHANNEL, LORA_DEFAULT_SPI_FREQUENCY);
+
+  if ( wiringPiSPISetup(CHANNEL, LORA_DEFAULT_SPI_FREQUENCY) < 0 )
+  {
+  	printf("SPI setup failed\r\n");
+  }
+
 
   char mode ;
   int fd = open("/dev/spidev0.0", O_RDWR);
@@ -83,36 +88,31 @@ LoRaClass::LoRaClass() :
       /* read mode */
       ioctl(fd,SPI_IOC_RD_MODE,&mode);
       printf("mode = %u\n",mode);
+
+      //write MSB
+      uint8_t Msb = 0; 
+      ioctl(fd, SPI_IOC_WR_LSB_FIRST, &Msb);
+
+      //datasize : 8 bit
+      uint8_t  data = 0;
+      ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &data);
    }
 
    close(fd);
   // not set bit order yet
+   printf("end Init \r\n");
 }
 
 int LoRaClass::begin(long frequency)
 {
-#ifdef ARDUINO_SAMD_MKRWAN1300
-  pinMode(LORA_IRQ_DUMB, OUTPUT);
-  digitalWrite(LORA_IRQ_DUMB, LOW);
 
-  // Hardware reset
-  pinMode(LORA_BOOT0, OUTPUT);
-  digitalWrite(LORA_BOOT0, LOW);
-
-  pinMode(LORA_RESET, OUTPUT);
-  digitalWrite(LORA_RESET, HIGH);
-  delay(200);
-  digitalWrite(LORA_RESET, LOW);
-  delay(200);
-  digitalWrite(LORA_RESET, HIGH);
-  delay(50);
-#endif
-
+  printf("setup ss pin\r\n");
   // setup pins
   pinMode(_ss, OUTPUT);
   // set SS high
   digitalWrite(_ss, HIGH);
 
+  printf("setup reset pin and reset lora module \r\n");
   if (_reset != -1) {
     pinMode(_reset, OUTPUT);
 
@@ -123,14 +123,17 @@ int LoRaClass::begin(long frequency)
     usleep(10000);
   }
 
+  printf("check version\r\n");
   // check version
   uint8_t version = readRegister(REG_VERSION);
+  printf("LoRa version: %d\r\n",version);
   if (version != 0x12) {
     return 0;
   }
-
+  printf("before sleep \r\n");
   // put in sleep mode
   sleep();
+  printf("after sleep \r\n");
 
   // set frequency
   setFrequency(frequency);
@@ -603,12 +606,12 @@ void LoRaClass::writeRegister(uint8_t address, uint8_t value)
 uint8_t LoRaClass::singleTransfer(uint8_t address, uint8_t value)
 {
   uint8_t response;
-
+ 
   digitalWrite(_ss, LOW);
 
   wiringPiSPIDataRW(CHANNEL, &address, 1);
-  response = wiringPiSPIDataRW(CHANNEL, &value, 1);
-
+  wiringPiSPIDataRW(CHANNEL, &value, 1);
+  response = value;
   digitalWrite(_ss, HIGH);
 
   return response;
@@ -618,5 +621,3 @@ void LoRaClass::onDio0Rise()
 {
   LoRa.handleDio0Rise();
 }
-
-LoRaClass LoRa;
