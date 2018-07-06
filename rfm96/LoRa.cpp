@@ -62,25 +62,17 @@ LoRaClass::LoRaClass() :
 {
   // overide Stream timeout value
   wiringPiSetup();
-
-  if ( wiringPiSPISetup(CHANNEL, LORA_DEFAULT_SPI_FREQUENCY) < 0 )
+  int fd ;
+  if ( ( fd = wiringPiSPISetup(CHANNEL, LORA_DEFAULT_SPI_FREQUENCY) ) < 0 )
   {
-  	printf("SPI setup failed\r\n");
+  	printf("--------SPI setup failed---------\r\n");
   }
 
 
   char mode ;
-  int fd = open("/dev/spidev0.0", O_RDWR);
+  //int fd = open("/dev/spidev0.0", O_RDWR);
   if (fd >= 0)
   {
-      /* write mode */
-      mode = SPI_MODE_3;
-      ioctl(fd,SPI_IOC_WR_MODE,&mode);
-
-      /* read mode */
-      ioctl(fd,SPI_IOC_RD_MODE,&mode);
-      printf("mode = %u\n",mode);
-
       /* write mode */
       mode = SPI_MODE_0;
       ioctl(fd,SPI_IOC_WR_MODE,&mode);
@@ -91,14 +83,22 @@ LoRaClass::LoRaClass() :
 
       //write MSB
       uint8_t Msb = 0; 
-      ioctl(fd, SPI_IOC_WR_LSB_FIRST, &Msb);
+      //ioctl(fd, SPI_IOC_WR_LSB_FIRST, &Msb);
+
+      // read MSB
+      ioctl(fd, SPI_IOC_RD_LSB_FIRST, &Msb);
+      printf("Bit order : %d\r\n",Msb);
 
       //datasize : 8 bit
       uint8_t  data = 0;
-      ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &data);
+      //ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &data);
+      
+      // read data size
+      ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &data);
+      printf("Data size: %d\r\n",data);
    }
 
-   close(fd);
+   //close(fd);
   // not set bit order yet
    printf("end Init \r\n");
 }

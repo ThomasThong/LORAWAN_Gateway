@@ -16,7 +16,7 @@
 using namespace std;
 
 typedef unsigned char byte;
-#define LORA_DEFAULT_SPI_FREQUENCY 1E6 
+#define LORA_DEFAULT_SPI_FREQUENCY 1E5
 #define LORA_DEFAULT_SS_PIN        3
 #define LORA_DEFAULT_RESET_PIN     2
 #define LORA_DEFAULT_DIO0_PIN      0
