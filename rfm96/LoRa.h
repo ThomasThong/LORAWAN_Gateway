@@ -20,14 +20,14 @@ typedef unsigned char byte;
 #define LORA_DEFAULT_SS_PIN        3
 #define LORA_DEFAULT_RESET_PIN     2
 #define LORA_DEFAULT_DIO0_PIN      0
-#define CHANNEL			   0
+#define DEFAULT_SPI_CHANNEL	   0
 
 #define PA_OUTPUT_RFO_PIN          0
 #define PA_OUTPUT_PA_BOOST_PIN     1
 
 class LoRaClass {
 public:
-  LoRaClass();
+  LoRaClass(uint8_t ss=LORA_DEFAULT_SS_PIN, uint8_t reset=LORA_DEFAULT_RESET_PIN, uint8_t dio0 = LORA_DEFAULT_DIO0_PIN, uint8_t channel = DEFAULT_SPI_CHANNEL );
 
   int begin(long frequency);
   void end();
@@ -50,11 +50,9 @@ public:
   virtual int peek();
   virtual void flush();
 
-#ifndef ARDUINO_SAMD_MKRWAN1300
   void onReceive(void(*callback)(int));
+  void receive(int size = 0); 
 
-  void receive(int size = 0);
-#endif
   void idle();
   void sleep();
 
@@ -99,6 +97,7 @@ private:
   int _ss;
   int _reset;
   int _dio0;
+  int _channel;
   long _frequency;
   int _packetIndex;
   int _implicitHeaderMode;

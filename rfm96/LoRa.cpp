@@ -53,8 +53,8 @@
 
 #define MAX_PKT_LENGTH           255
 
-LoRaClass::LoRaClass() :
-  _ss(LORA_DEFAULT_SS_PIN), _reset(LORA_DEFAULT_RESET_PIN), _dio0(LORA_DEFAULT_DIO0_PIN),
+LoRaClass::LoRaClass(uint8_t ss, uint8_t reset, uint8_t dio0, uint8_t channel) :
+  _ss(ss), _reset(reset), _dio0(dio0), _channel(channel),
   _frequency(0),
   _packetIndex(0),
   _implicitHeaderMode(0),
@@ -63,7 +63,7 @@ LoRaClass::LoRaClass() :
   // overide Stream timeout value
   wiringPiSetup();
   int fd ;
-  if ( ( fd = wiringPiSPISetup(CHANNEL, LORA_DEFAULT_SPI_FREQUENCY) ) < 0 )
+  if ( ( fd = wiringPiSPISetup(_channel, LORA_DEFAULT_SPI_FREQUENCY) ) < 0 )
   {
   	printf("--------SPI setup failed---------\r\n");
   }
@@ -91,8 +91,7 @@ LoRaClass::LoRaClass() :
 
       //datasize : 8 bit
       uint8_t  data = 0;
-      //ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &data);
-      
+
       // read data size
       ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &data);
       printf("Data size: %d\r\n",data);
@@ -542,7 +541,7 @@ void LoRaClass::setPins(int ss, int reset, int dio0)
 
 void LoRaClass::setSPIFrequency(uint32_t frequency)
 {
-  wiringPiSPISetup(CHANNEL, frequency);
+  wiringPiSPISetup(_channel, frequency);
 }
 
 void LoRaClass::dumpRegisters()
@@ -609,8 +608,8 @@ uint8_t LoRaClass::singleTransfer(uint8_t address, uint8_t value)
  
   digitalWrite(_ss, LOW);
 
-  wiringPiSPIDataRW(CHANNEL, &address, 1);
-  wiringPiSPIDataRW(CHANNEL, &value, 1);
+  wiringPiSPIDataRW(_channel, &address, 1);
+  wiringPiSPIDataRW(_channel, &value, 1);
   response = value;
   digitalWrite(_ss, HIGH);
 
