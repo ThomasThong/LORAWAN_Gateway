@@ -270,31 +270,6 @@ long LoRaClass::packetFrequencyError()
   return static_cast<long>(fError);
 }
 
-size_t LoRaClass::write(uint8_t byte)
-{
-  return write(&byte, sizeof(byte));
-}
-
-size_t LoRaClass::write(const uint8_t *buffer, size_t size)
-{
-  int currentLength = readRegister(REG_PAYLOAD_LENGTH);
-
-  // check size
-  if ((currentLength + size) > MAX_PKT_LENGTH) {
-    size = MAX_PKT_LENGTH - currentLength;
-  }
-
-  // write data
-  for (size_t i = 0; i < size; i++) {
-    writeRegister(REG_FIFO, buffer[i]);
-  }
-
-  // update length
-  writeRegister(REG_PAYLOAD_LENGTH, currentLength + size);
-
-  return size;
-}
-
 int LoRaClass::available()
 {
   return (readRegister(REG_RX_NB_BYTES) - _packetIndex);
@@ -302,8 +277,8 @@ int LoRaClass::available()
 
 int LoRaClass::read()
 {
-  if (!available()) {
-    return -1;
+  if(!available()) {
+	return -1;
   }
 
   _packetIndex++;
@@ -313,14 +288,14 @@ int LoRaClass::read()
 
 int LoRaClass::peek()
 {
-  if (!available()) {
-    return -1;
+  if (!available()){
+	return -1;
   }
 
-  // store current FIFO address
+  //store current FIFO address
   int currentAddress = readRegister(REG_FIFO_ADDR_PTR);
 
-  // read
+  //read
   uint8_t b = readRegister(REG_FIFO);
 
   // restore FIFO address
@@ -329,11 +304,6 @@ int LoRaClass::peek()
   return b;
 }
 
-void LoRaClass::flush()
-{
-}
-
-#ifndef ARDUINO_SAMD_MKRWAN1300
 void LoRaClass::onReceive(void(*callback)(int))
 {
   _onReceive = callback;
@@ -358,7 +328,6 @@ void LoRaClass::receive(int size)
 
   writeRegister(REG_OP_MODE, MODE_LONG_RANGE_MODE | MODE_RX_CONTINUOUS);
 }
-#endif
 
 void LoRaClass::idle()
 {
