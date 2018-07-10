@@ -6,13 +6,25 @@
 
 #IncludeRegexTransform: 
 
-/home/pi/ThomasThong/rfm96/src/LoRa.cpp
+/home/pi/ThomasThong/LORAWAN_Gateway/rfm96_CMake/src/LoRa.cpp
 LoRa.h
--
+/home/pi/ThomasThong/LORAWAN_Gateway/rfm96_CMake/src/LoRa.h
 
 inc/LoRa.h
-cstdlib
+cstdint
+-
+iostream
 -
 wiringPi.h
+-
+wiringPiSPI.h
+-
+sys/ioctl.h
+-
+linux/spi/spidev.h
+-
+fcntl.h
+-
+unistd.h
 -
 

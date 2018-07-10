@@ -4,32 +4,30 @@
 #ifndef LORA_H
 #define LORA_H
 
-#include <cstdlib>
+#include <cstdint>
+#include <iostream>
 #include <wiringPi.h>
+#include <wiringPiSPI.h>
+#include <sys/ioctl.h>
+#include <linux/spi/spidev.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 using namespace std;
 
 typedef unsigned char byte;
-#ifdef ARDUINO_SAMD_MKRWAN1300
-#define LORA_DEFAULT_SPI           SPI1
-#define LORA_DEFAULT_SPI_FREQUENCY 250000
-#define LORA_DEFAULT_SS_PIN        LORA_IRQ_DUMB
-#define LORA_DEFAULT_RESET_PIN     -1
-#define LORA_DEFAULT_DIO0_PIN      -1
-#else
-#define LORA_DEFAULT_SPI           SPI
-#define LORA_DEFAULT_SPI_FREQUENCY 8E6 
-#define LORA_DEFAULT_SS_PIN        10
-#define LORA_DEFAULT_RESET_PIN     9
-#define LORA_DEFAULT_DIO0_PIN      2
-#endif
+#define LORA_DEFAULT_SPI_FREQUENCY 1E6
+#define LORA_DEFAULT_SS_PIN        3
+#define LORA_DEFAULT_RESET_PIN     2
+#define LORA_DEFAULT_DIO0_PIN      0
+#define DEFAULT_SPI_CHANNEL	   0
 
 #define PA_OUTPUT_RFO_PIN          0
 #define PA_OUTPUT_PA_BOOST_PIN     1
 
-class LoRaClass : public Stream {
+class LoRaClass {
 public:
-  LoRaClass();
+  LoRaClass(uint8_t ss=LORA_DEFAULT_SS_PIN, uint8_t reset=LORA_DEFAULT_RESET_PIN, uint8_t dio0 = LORA_DEFAULT_DIO0_PIN, uint8_t channel = DEFAULT_SPI_CHANNEL );
 
   int begin(long frequency);
   void end();
@@ -42,21 +40,18 @@ public:
   float packetSnr();
   long packetFrequencyError();
 
-  // from Print
   virtual size_t write(uint8_t byte);
   virtual size_t write(const uint8_t *buffer, size_t size);
+
 
   // from Stream
   virtual int available();
   virtual int read();
   virtual int peek();
-  virtual void flush();
 
-#ifndef ARDUINO_SAMD_MKRWAN1300
   void onReceive(void(*callback)(int));
+  void receive(int size = 0); 
 
-  void receive(int size = 0);
-#endif
   void idle();
   void sleep();
 
@@ -77,10 +72,7 @@ public:
   byte random();
 
   void setPins(int ss = LORA_DEFAULT_SS_PIN, int reset = LORA_DEFAULT_RESET_PIN, int dio0 = LORA_DEFAULT_DIO0_PIN);
-  void setSPI(SPIClass& spi);
   void setSPIFrequency(uint32_t frequency);
-
-  void dumpRegisters(Stream& out);
 
 private:
   void explicitHeaderMode();
@@ -97,20 +89,26 @@ private:
   void writeRegister(uint8_t address, uint8_t value);
   uint8_t singleTransfer(uint8_t address, uint8_t value);
 
-  static void onDio0Rise();
+  static void onDio0Rise(void *);
 
+  void dumpRegisters();
 private:
-  SPISettings _spiSettings;
-  SPIClass* _spi;
   int _ss;
   int _reset;
   int _dio0;
+  int _channel;
   long _frequency;
   int _packetIndex;
   int _implicitHeaderMode;
   void (*_onReceive)(int);
 };
 
-extern LoRaClass LoRa;
+typedef struct _LoraConfig{
+  LoRaClass Lora;
+  int Bandwidth;
+  uint8_t CodingRate;
+  uint8_t SF;
+  uint8_t PreambleLength;
+} LoraConfig;
 
 #endif

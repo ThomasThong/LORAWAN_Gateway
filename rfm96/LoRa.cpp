@@ -270,6 +270,30 @@ long LoRaClass::packetFrequencyError()
   return static_cast<long>(fError);
 }
 
+
+size_t LoRaClass::write(uint8_t byte) {
+  return write(&byte, sizeof(byte));
+}
+
+size_t LoRaClass::write(const uint8_t *buffer, size_t size) {
+  int currentLength = readRegister(REG_PAYLOAD_LENGTH);
+
+  // check size
+  if ((currentLength + size) > MAX_PKT_LENGTH) {
+    size = MAX_PKT_LENGTH - currentLength;
+  }
+
+  // write data
+  for (size_t i = 0; i < size; i++) {
+    writeRegister(REG_FIFO, buffer[i]);
+  }
+
+  // update length
+  writeRegister(REG_PAYLOAD_LENGTH, currentLength + size);
+
+  return size;
+}
+
 int LoRaClass::available()
 {
   return (readRegister(REG_RX_NB_BYTES) - _packetIndex);
@@ -312,7 +336,7 @@ void LoRaClass::onReceive(void(*callback)(int))
     pinMode(_dio0, INPUT);
 
     writeRegister(REG_DIO_MAPPING_1, 0x00);
-    wiringPiISR(_dio0, INT_EDGE_RISING, LoRaClass::onDio0Rise);
+    wiringPiISR(_dio0, INT_EDGE_RISING, LoRaClass::onDio0Rise,(void*) this);
   }
 }
 
@@ -585,7 +609,8 @@ uint8_t LoRaClass::singleTransfer(uint8_t address, uint8_t value)
   return response;
 }
 
-void LoRaClass::onDio0Rise()
+void LoRaClass::onDio0Rise(void *arg )
 {
-  LoRa.handleDio0Rise();
+  LoRaClass* Lora = (LoRaClass*) arg;
+  Lora->handleDio0Rise();
 }

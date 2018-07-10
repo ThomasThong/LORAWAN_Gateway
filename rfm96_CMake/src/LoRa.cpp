@@ -1,7 +1,7 @@
 // Copyright (c) Sandeep Mistry. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#include <LoRa.h>
+#include "LoRa.h"
 
 // registers
 #define REG_FIFO                 0x00
@@ -53,64 +53,86 @@
 
 #define MAX_PKT_LENGTH           255
 
-LoRaClass::LoRaClass() :
-  _spiSettings(LORA_DEFAULT_SPI_FREQUENCY, MSBFIRST, SPI_MODE0),
-  _spi(&LORA_DEFAULT_SPI),
-  _ss(LORA_DEFAULT_SS_PIN), _reset(LORA_DEFAULT_RESET_PIN), _dio0(LORA_DEFAULT_DIO0_PIN),
+LoRaClass::LoRaClass(uint8_t ss, uint8_t reset, uint8_t dio0, uint8_t channel) :
+  _ss(ss), _reset(reset), _dio0(dio0), _channel(channel),
   _frequency(0),
   _packetIndex(0),
   _implicitHeaderMode(0),
   _onReceive(NULL)
 {
   // overide Stream timeout value
-  setTimeout(0);
+  wiringPiSetup();
+  int fd ;
+  if ( ( fd = wiringPiSPISetup(_channel, LORA_DEFAULT_SPI_FREQUENCY) ) < 0 )
+  {
+  	printf("--------SPI setup failed---------\r\n");
+  }
+
+
+  char mode ;
+  //int fd = open("/dev/spidev0.0", O_RDWR);
+  if (fd >= 0)
+  {
+      /* write mode */
+      mode = SPI_MODE_0;
+      ioctl(fd,SPI_IOC_WR_MODE,&mode);
+
+      /* read mode */
+      ioctl(fd,SPI_IOC_RD_MODE,&mode);
+      printf("mode = %u\n",mode);
+
+      //write MSB
+      uint8_t Msb = 0; 
+      //ioctl(fd, SPI_IOC_WR_LSB_FIRST, &Msb);
+
+      // read MSB
+      ioctl(fd, SPI_IOC_RD_LSB_FIRST, &Msb);
+      printf("Bit order : %d\r\n",Msb);
+
+      //datasize : 8 bit
+      uint8_t  data = 0;
+
+      // read data size
+      ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &data);
+      printf("Data size: %d\r\n",data);
+   }
+
+   //close(fd);
+  // not set bit order yet
+   printf("end Init \r\n");
 }
 
 int LoRaClass::begin(long frequency)
 {
-#ifdef ARDUINO_SAMD_MKRWAN1300
-  pinMode(LORA_IRQ_DUMB, OUTPUT);
-  digitalWrite(LORA_IRQ_DUMB, LOW);
 
-  // Hardware reset
-  pinMode(LORA_BOOT0, OUTPUT);
-  digitalWrite(LORA_BOOT0, LOW);
-
-  pinMode(LORA_RESET, OUTPUT);
-  digitalWrite(LORA_RESET, HIGH);
-  delay(200);
-  digitalWrite(LORA_RESET, LOW);
-  delay(200);
-  digitalWrite(LORA_RESET, HIGH);
-  delay(50);
-#endif
-
+  printf("setup ss pin\r\n");
   // setup pins
   pinMode(_ss, OUTPUT);
   // set SS high
   digitalWrite(_ss, HIGH);
 
+  printf("setup reset pin and reset lora module \r\n");
   if (_reset != -1) {
     pinMode(_reset, OUTPUT);
 
     // perform reset
     digitalWrite(_reset, LOW);
-    delay(10);
+    usleep(10000);
     digitalWrite(_reset, HIGH);
-    delay(10);
+    usleep(10000);
   }
 
-  // start SPI
-  _spi->begin();
-
+  printf("check version\r\n");
   // check version
   uint8_t version = readRegister(REG_VERSION);
+  printf("LoRa version: %d\r\n",version);
   if (version != 0x12) {
     return 0;
   }
-
+  printf("before sleep \r\n");
   // put in sleep mode
   sleep();
+  printf("after sleep \r\n");
 
   // set frequency
   setFrequency(frequency);
@@ -138,9 +160,6 @@ void LoRaClass::end()
 {
   // put in sleep mode
   sleep();
-
-  // stop SPI
-  _spi->end();
 }
 
 int LoRaClass::beginPacket(int implicitHeader)
@@ -168,7 +187,7 @@ int LoRaClass::endPacket()
 
   // wait for TX done
   while ((readRegister(REG_IRQ_FLAGS) & IRQ_TX_DONE_MASK) == 0) {
-    yield();
+   
   }
 
   // clear IRQ's
@@ -235,13 +254,13 @@ float LoRaClass::packetSnr()
 long LoRaClass::packetFrequencyError()
 {
   int32_t freqError = 0;
-  freqError = static_cast<int32_t>(readRegister(REG_FREQ_ERROR_MSB) & B111);
+  freqError = static_cast<int32_t>(readRegister(REG_FREQ_ERROR_MSB) & 0x07);
   freqError <<= 8L;
   freqError += static_cast<int32_t>(readRegister(REG_FREQ_ERROR_MID));
   freqError <<= 8L;
   freqError += static_cast<int32_t>(readRegister(REG_FREQ_ERROR_LSB));
 
-  if (readRegister(REG_FREQ_ERROR_MSB) & B1000) { // Sign bit is on
+  if (readRegister(REG_FREQ_ERROR_MSB) & 0x08) { // Sign bit is on
      freqError -= 524288; // B1000'0000'0000'0000'0000
   }
 
@@ -251,13 +270,12 @@ long LoRaClass::packetFrequencyError()
   return static_cast<long>(fError);
 }
 
-size_t LoRaClass::write(uint8_t byte)
-{
+
+size_t LoRaClass::write(uint8_t byte) {
   return write(&byte, sizeof(byte));
 }
 
-size_t LoRaClass::write(const uint8_t *buffer, size_t size)
-{
+size_t LoRaClass::write(const uint8_t *buffer, size_t size) {
   int currentLength = readRegister(REG_PAYLOAD_LENGTH);
 
   // check size
@@ -283,8 +301,8 @@ int LoRaClass::available()
 
 int LoRaClass::read()
 {
-  if (!available()) {
-    return -1;
+  if(!available()) {
+	return -1;
   }
 
   _packetIndex++;
@@ -294,14 +312,14 @@ int LoRaClass::read()
 
 int LoRaClass::peek()
 {
-  if (!available()) {
-    return -1;
+  if (!available()){
+	return -1;
   }
 
-  // store current FIFO address
+  //store current FIFO address
   int currentAddress = readRegister(REG_FIFO_ADDR_PTR);
 
-  // read
+  //read
   uint8_t b = readRegister(REG_FIFO);
 
   // restore FIFO address
@@ -310,11 +328,6 @@ int LoRaClass::peek()
   return b;
 }
 
-void LoRaClass::flush()
-{
-}
-
-#ifndef ARDUINO_SAMD_MKRWAN1300
 void LoRaClass::onReceive(void(*callback)(int))
 {
   _onReceive = callback;
@@ -323,15 +336,7 @@ void LoRaClass::onReceive(void(*callback)(int))
     pinMode(_dio0, INPUT);
 
     writeRegister(REG_DIO_MAPPING_1, 0x00);
-#ifdef SPI_HAS_NOTUSINGINTERRUPT
-    SPI.usingInterrupt(digitalPinToInterrupt(_dio0));
-#endif
-    attachInterrupt(digitalPinToInterrupt(_dio0), LoRaClass::onDio0Rise, RISING);
-  } else {
-    detachInterrupt(digitalPinToInterrupt(_dio0));
-#ifdef SPI_HAS_NOTUSINGINTERRUPT
-    SPI.notUsingInterrupt(digitalPinToInterrupt(_dio0));
-#endif
+    wiringPiISR(_dio0, INT_EDGE_RISING, LoRaClass::onDio0Rise,(void*) this);
   }
 }
 
@@ -347,7 +352,6 @@ void LoRaClass::receive(int size)
 
   writeRegister(REG_OP_MODE, MODE_LONG_RANGE_MODE | MODE_RX_CONTINUOUS);
 }
-#endif
 
 void LoRaClass::idle()
 {
@@ -471,10 +475,14 @@ void LoRaClass::setLdoFlag()
   long symbolDuration = 1000 / ( getSignalBandwidth() / (1L << getSpreadingFactor()) ) ;
     
   // Section 4.1.1.6
-  boolean ldoOn = symbolDuration > 16;
+  bool ldoOn = symbolDuration > 16;
     
   uint8_t config3 = readRegister(REG_MODEM_CONFIG_3);
-  bitWrite(config3, 3, ldoOn);
+  if (ldoOn)
+      config3 |= 0x08;
+  else
+      config3 &= ~0x08;
+  //bitWrite(config3, 3, ldoOn);
   writeRegister(REG_MODEM_CONFIG_3, config3);
 }
 
@@ -524,23 +532,16 @@ void LoRaClass::setPins(int ss, int reset, int dio0)
   _dio0 = dio0;
 }
 
-void LoRaClass::setSPI(SPIClass& spi)
-{
-  _spi = &spi;
-}
-
 void LoRaClass::setSPIFrequency(uint32_t frequency)
 {
-  _spiSettings = SPISettings(frequency, MSBFIRST, SPI_MODE0);
+  wiringPiSPISetup(_channel, frequency);
 }
 
-void LoRaClass::dumpRegisters(Stream& out)
+void LoRaClass::dumpRegisters()
 {
   for (int i = 0; i < 128; i++) {
-    out.print("0x");
-    out.print(i, HEX);
-    out.print(": 0x");
-    out.println(readRegister(i), HEX);
+    printf("0x%x",i);;
+    printf(": 0x%x\r\n",readRegister(i));
   }
 }
 
@@ -597,22 +598,19 @@ void LoRaClass::writeRegister(uint8_t address, uint8_t value)
 uint8_t LoRaClass::singleTransfer(uint8_t address, uint8_t value)
 {
   uint8_t response;
-
+ 
   digitalWrite(_ss, LOW);
 
-  _spi->beginTransaction(_spiSettings);
-  _spi->transfer(address);
-  response = _spi->transfer(value);
-  _spi->endTransaction();
-
+  wiringPiSPIDataRW(_channel, &address, 1);
+  wiringPiSPIDataRW(_channel, &value, 1);
+  response = value;
   digitalWrite(_ss, HIGH);
 
   return response;
 }
 
-void LoRaClass::onDio0Rise()
+void LoRaClass::onDio0Rise(void *arg )
 {
-  LoRa.handleDio0Rise();
+  LoRaClass* Lora = (LoRaClass*) arg;
+  Lora->handleDio0Rise();
 }
-
-LoRaClass LoRa;

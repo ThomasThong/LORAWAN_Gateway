@@ -1,1 +1,1 @@
-/usr/bin/c++      CMakeFiles/test_rfm96.dir/src/LoRa.cpp.o  -o test_rfm96 -rdynamic 
+/usr/bin/c++      CMakeFiles/test_rfm96.dir/src/LoRa.cpp.o  -o test_rfm96 -Wl,-rpath,/usr/local/lib -rdynamic /usr/local/lib/libwiringPi.so 

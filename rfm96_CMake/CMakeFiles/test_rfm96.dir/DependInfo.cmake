@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/pi/ThomasThong/rfm96/src/LoRa.cpp" "/home/pi/ThomasThong/rfm96/CMakeFiles/test_rfm96.dir/src/LoRa.cpp.o"
+  "/home/pi/ThomasThong/LORAWAN_Gateway/rfm96_CMake/src/LoRa.cpp" "/home/pi/ThomasThong/LORAWAN_Gateway/rfm96_CMake/CMakeFiles/test_rfm96.dir/src/LoRa.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

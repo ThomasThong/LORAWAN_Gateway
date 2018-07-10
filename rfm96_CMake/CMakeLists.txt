@@ -9,3 +9,6 @@ include_directories(inc)
 file (GLOB SOURCES "src/*.cpp")
 
 add_executable(test_rfm96 ${SOURCES})
+find_library(wiringPi_LIB  wiringPi)
+target_link_libraries(test_rfm96 ${wiringPi_LIB})
+add_definitions(-std=c++0x -lwiringPi -pthread)

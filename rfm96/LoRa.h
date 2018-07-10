@@ -16,7 +16,7 @@
 using namespace std;
 
 typedef unsigned char byte;
-#define LORA_DEFAULT_SPI_FREQUENCY 1E5
+#define LORA_DEFAULT_SPI_FREQUENCY 1E6
 #define LORA_DEFAULT_SS_PIN        3
 #define LORA_DEFAULT_RESET_PIN     2
 #define LORA_DEFAULT_DIO0_PIN      0
@@ -39,6 +39,10 @@ public:
   int packetRssi();
   float packetSnr();
   long packetFrequencyError();
+
+  virtual size_t write(uint8_t byte);
+  virtual size_t write(const uint8_t *buffer, size_t size);
+
 
   // from Stream
   virtual int available();
@@ -85,7 +89,7 @@ private:
   void writeRegister(uint8_t address, uint8_t value);
   uint8_t singleTransfer(uint8_t address, uint8_t value);
 
-  static void onDio0Rise();
+  static void onDio0Rise(void *);
 
   void dumpRegisters();
 private:
@@ -99,6 +103,12 @@ private:
   void (*_onReceive)(int);
 };
 
-extern LoRaClass LoRa;
+typedef struct _LoraConfig{
+  LoRaClass Lora;
+  int Bandwidth;
+  uint8_t CodingRate;
+  uint8_t SF;
+  uint8_t PreambleLength;
+} LoraConfig;
 
 #endif
