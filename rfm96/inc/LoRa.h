@@ -104,7 +104,7 @@ private:
 };
 
 typedef struct _LoraConfig{
-  LoRaClass Lora;
+  LoRaClass* Lora;
   int Bandwidth;
   uint8_t CodingRate;
   uint8_t SF;
