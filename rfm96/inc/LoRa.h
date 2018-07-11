@@ -17,9 +17,14 @@ using namespace std;
 
 typedef unsigned char byte;
 #define LORA_DEFAULT_SPI_FREQUENCY 1E6
-#define LORA_DEFAULT_SS_PIN        3
-#define LORA_DEFAULT_RESET_PIN     2
-#define LORA_DEFAULT_DIO0_PIN      0
+#define LORA_DEFAULT_CHANNEL0_SS_PIN        30
+#define LORA_DEFAULT_CHANNEL0_RESET_PIN     21
+#define LORA_DEFAULT_CHANNEL0_DIO0_PIN      22
+
+#define LORA_DEFAULT_CHANNEL1_SS_PIN        0
+#define LORA_DEFAULT_CHANNEL1_RESET_PIN     2
+#define LORA_DEFAULT_CHANNEL1_DIO0_PIN      3
+
 #define DEFAULT_SPI_CHANNEL	   0
 
 #define PA_OUTPUT_RFO_PIN          0
@@ -27,7 +32,7 @@ typedef unsigned char byte;
 
 class LoRaClass {
 public:
-  LoRaClass(uint8_t ss=LORA_DEFAULT_SS_PIN, uint8_t reset=LORA_DEFAULT_RESET_PIN, uint8_t dio0 = LORA_DEFAULT_DIO0_PIN, uint8_t channel = DEFAULT_SPI_CHANNEL );
+  LoRaClass(uint8_t channel = DEFAULT_SPI_CHANNEL );
 
   int begin(long frequency);
   void end();
@@ -71,7 +76,7 @@ public:
 
   byte random();
 
-  void setPins(int ss = LORA_DEFAULT_SS_PIN, int reset = LORA_DEFAULT_RESET_PIN, int dio0 = LORA_DEFAULT_DIO0_PIN);
+  void setPins(int ss = LORA_DEFAULT_CHANNEL0_SS_PIN, int reset = LORA_DEFAULT_CHANNEL0_RESET_PIN, int dio0 = LORA_DEFAULT_CHANNEL0_DIO0_PIN);
   void setSPIFrequency(uint32_t frequency);
 
 private:
@@ -111,6 +116,7 @@ private:
 
 typedef struct _LoraConfig{
   LoRaClass* Lora;
+  int Freq;
   int Bandwidth;
   uint8_t CodingRate;
   uint8_t SF;

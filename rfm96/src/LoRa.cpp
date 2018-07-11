@@ -53,8 +53,8 @@
 
 #define MAX_PKT_LENGTH           255
 
-LoRaClass::LoRaClass(uint8_t ss, uint8_t reset, uint8_t dio0, uint8_t channel) :
-  _ss(ss), _reset(reset), _dio0(dio0), _channel(channel),
+LoRaClass::LoRaClass(uint8_t channel) :
+  _channel(channel),
   _frequency(0),
   _packetIndex(0),
   _implicitHeaderMode(0),
@@ -64,6 +64,10 @@ LoRaClass::LoRaClass(uint8_t ss, uint8_t reset, uint8_t dio0, uint8_t channel) :
   wiringPiSetup();
   if (_channel == 0)
   {
+	_ss = LORA_DEFAULT_CHANNEL0_SS_PIN;
+	_reset = LORA_DEFAULT_CHANNEL0_RESET_PIN;
+	_dio0 = LORA_DEFAULT_CHANNEL0_DIO0_PIN;
+
   	int fd ;
   	if ( ( fd = wiringPiSPISetup(_channel, LORA_DEFAULT_SPI_FREQUENCY) ) < 0 )
   	{
@@ -103,10 +107,15 @@ LoRaClass::LoRaClass(uint8_t ss, uint8_t reset, uint8_t dio0, uint8_t channel) :
 	//_mosi = 12;
 	//_miso = 13;
 	//_clk = 14;
+	printf("soft SPI\r\n");
 
-	_mosi = 23;
-	_miso = 24;
-	_clk = 25;
+	_ss = LORA_DEFAULT_CHANNEL1_SS_PIN;
+	_reset = LORA_DEFAULT_CHANNEL1_RESET_PIN;
+	_dio0 = LORA_DEFAULT_CHANNEL1_DIO0_PIN;
+
+	_mosi = 8;
+	_miso = 9;
+	_clk = 7;
 
 	pinMode(_mosi, OUTPUT);
 	pinMode(_miso, INPUT);
@@ -648,11 +657,9 @@ uint8_t LoRaClass::singleTransfer(uint8_t address, uint8_t value)
 		data <<= 1;
 		data |= bval ;
 
-		//printf ("Receive bit%d when clock high : %d\r\n",i, bval);
+		//printf ("Receive bit%d : %d\r\n",i, bval);
 
 		digitalWrite(_clk,LOW);
-		bval = digitalRead(_miso);
-		//printf ("Receive bit%d when clock low : %d\r\n",i, bval);
 	}
 	//printf("Receive data : %d\e\n",data);
 	response = data;
