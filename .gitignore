@@ -43,3 +43,5 @@ compile_commands.json
 CTestTestfile.cmake
 
 rfm96/build/*
+rfm96/bin/*
+rfm96/lib/*
