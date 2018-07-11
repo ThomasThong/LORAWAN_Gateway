@@ -42,7 +42,9 @@ void* LoraReceive(void *arg)
 
 int main()
 {
-  LoRaClass LoRa;
+  //LoRaClass LoRa;
+  //LoRaClass LoRa(22,21,30,1);
+  LoRaClass LoRa(3,2,0,1);
   int rc;
   LoraConfig config1, config2;
   config1.Lora = &LoRa;

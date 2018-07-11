@@ -93,6 +93,12 @@ private:
 
   void dumpRegisters();
 private:
+
+  //Soft SPI
+  uint8_t _mosi;
+  uint8_t _miso;
+  uint8_t _clk;
+
   int _ss;
   int _reset;
   int _dio0;

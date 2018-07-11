@@ -1,4 +1,4 @@
-// Copyright (c) Sandeep Mistry. All rights reserved.
+// Copyright (c) Sandeep Mistry. All rights reserved
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 #include "LoRa.h"
@@ -62,44 +62,61 @@ LoRaClass::LoRaClass(uint8_t ss, uint8_t reset, uint8_t dio0, uint8_t channel) :
 {
   // overide Stream timeout value
   wiringPiSetup();
-  int fd ;
-  if ( ( fd = wiringPiSPISetup(_channel, LORA_DEFAULT_SPI_FREQUENCY) ) < 0 )
+  if (_channel == 0)
   {
-  	printf("--------SPI setup failed---------\r\n");
-  }
-
-
-  char mode ;
-  //int fd = open("/dev/spidev0.0", O_RDWR);
-  if (fd >= 0)
-  {
-      /* write mode */
-      mode = SPI_MODE_0;
-      ioctl(fd,SPI_IOC_WR_MODE,&mode);
-
-      /* read mode */
-      ioctl(fd,SPI_IOC_RD_MODE,&mode);
-      printf("mode = %u\n",mode);
-
-      //write MSB
-      uint8_t Msb = 0; 
-      //ioctl(fd, SPI_IOC_WR_LSB_FIRST, &Msb);
-
-      // read MSB
-      ioctl(fd, SPI_IOC_RD_LSB_FIRST, &Msb);
-      printf("Bit order : %d\r\n",Msb);
-
-      //datasize : 8 bit
-      uint8_t  data = 0;
-
-      // read data size
-      ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &data);
-      printf("Data size: %d\r\n",data);
+  	int fd ;
+  	if ( ( fd = wiringPiSPISetup(_channel, LORA_DEFAULT_SPI_FREQUENCY) ) < 0 )
+  	{
+  		printf("--------SPI setup failed---------\r\n");
+  	}
+	
+  	char mode ;
+  	//int fd = open("/dev/spidev0.0", O_RDWR);
+  	if (fd >= 0)
+  	{
+      	/* write mode */
+      	mode = SPI_MODE_0;
+      	ioctl(fd,SPI_IOC_WR_MODE,&mode);
+	
+      	/* read mode */
+      	ioctl(fd,SPI_IOC_RD_MODE,&mode);
+      	printf("mode = %u\n",mode);
+	
+      	//write MSB
+      	uint8_t Msb = 0; 
+      	//ioctl(fd, SPI_IOC_WR_LSB_FIRST, &Msb);
+	
+      	// read MSB
+      	ioctl(fd, SPI_IOC_RD_LSB_FIRST, &Msb);
+      	printf("Bit order : %d\r\n",Msb);
+	
+      	//datasize : 8 bit
+      	uint8_t  data = 0;
+	
+      	// read data size
+      	ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &data);
+      	printf("Data size: %d\r\n",data);
+   	}
    }
+   else if (_channel == 1)
+   {
+	//_mosi = 12;
+	//_miso = 13;
+	//_clk = 14;
 
-   //close(fd);
-  // not set bit order yet
-   printf("end Init \r\n");
+	_mosi = 23;
+	_miso = 24;
+	_clk = 25;
+
+	pinMode(_mosi, OUTPUT);
+	pinMode(_miso, INPUT);
+	pinMode(_clk, OUTPUT);
+	//_mosi = 23;
+	//_miso = 24;
+	//_clk = 25;
+	digitalWrite(_clk, LOW);
+   }
+   printf ("End contructor\r\n");
 }
 
 int LoRaClass::begin(long frequency)
@@ -598,12 +615,48 @@ void LoRaClass::writeRegister(uint8_t address, uint8_t value)
 uint8_t LoRaClass::singleTransfer(uint8_t address, uint8_t value)
 {
   uint8_t response;
- 
   digitalWrite(_ss, LOW);
 
-  wiringPiSPIDataRW(_channel, &address, 1);
-  wiringPiSPIDataRW(_channel, &value, 1);
-  response = value;
+  if (_channel == 0)
+  {
+  	wiringPiSPIDataRW(_channel, &address, 1);
+  	wiringPiSPIDataRW(_channel, &value, 1);
+  	response = value;
+  }
+  else if (_channel == 1)
+  {
+	uint8_t data = 0;
+  	for (int i = 0 ; i < 8 ; ++i)
+	{
+		digitalWrite(_mosi, address & (1<<(7-i)));
+		digitalWrite(_clk, HIGH);
+
+		uint8_t bval = digitalRead(_miso);
+		data <<= 1;
+		data |= bval;
+
+		digitalWrite(_clk,LOW);
+		//printf ("Sending bit%d : %d\r\n",i, (bool)(address&(1<<i)));
+	}
+
+	for (int i = 0 ; i < 8 ; ++i)
+	{
+		digitalWrite(_mosi, value & (1<<i));
+		digitalWrite(_clk, HIGH);
+
+		uint8_t bval = digitalRead(_miso);
+		data <<= 1;
+		data |= bval ;
+
+		//printf ("Receive bit%d when clock high : %d\r\n",i, bval);
+
+		digitalWrite(_clk,LOW);
+		bval = digitalRead(_miso);
+		//printf ("Receive bit%d when clock low : %d\r\n",i, bval);
+	}
+	//printf("Receive data : %d\e\n",data);
+	response = data;
+  }
   digitalWrite(_ss, HIGH);
 
   return response;
@@ -614,3 +667,4 @@ void LoRaClass::onDio0Rise(void *arg )
   LoRaClass* Lora = (LoRaClass*) arg;
   Lora->handleDio0Rise();
 }
+
