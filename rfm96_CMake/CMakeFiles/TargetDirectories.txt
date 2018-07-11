@@ -1,3 +1,0 @@
-/home/pi/ThomasThong/LORAWAN_Gateway/rfm96_CMake/CMakeFiles/rebuild_cache.dir
-/home/pi/ThomasThong/LORAWAN_Gateway/rfm96_CMake/CMakeFiles/edit_cache.dir
-/home/pi/ThomasThong/LORAWAN_Gateway/rfm96_CMake/CMakeFiles/test_rfm96.dir
