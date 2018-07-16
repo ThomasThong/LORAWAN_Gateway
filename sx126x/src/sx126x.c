@@ -21,10 +21,10 @@
  * \author    Gregory Cristian ( Semtech )
  */
 #include <string.h>
-#include "utilities.h"
-#include "timer.h"
+//#include "utilities.h"
+//#include "timer.h"
 #include "radio.h"
-#include "delay.h"
+//#include "delay.h"
 #include "sx126x.h"
 #include "sx126x-board.h"
 
@@ -210,7 +210,8 @@ uint32_t SX126xGetRandom( void )
     // Set radio in continuous reception
     SX126xSetRx( 0 );
 
-    DelayMs( 1 );
+    
+    //DelayMs( 1 );
 
     SX126xReadRegisters( RANDOM_NUMBER_GENERATORBASEADDR, buf, 4 );
 

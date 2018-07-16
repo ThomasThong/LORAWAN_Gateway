@@ -22,25 +22,36 @@
  */
 #include <stdlib.h>
 #include <wiringPi.h>
+#include <wiringPiSPI.h>
+#include <linux/spi/spidev.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 #include "board.h"
 #include "radio.h"
 #include "sx126x-board.h"
 
 #define CHANNEL 0
+uint8_t fd;
 
 void SX126xIoInit( void )
 {
+    wiringPiSetup();
+
     pinMode(RADIO_NSS, OUTPUT);
     pinMode(RADIO_BUSY, INPUT);
     pinMode(RADIO_DIO_1, INPUT);
 
-    wiringPiSPISetup(CHANNEL, 10000);
+    fd = wiringPiSPISetup(CHANNEL, 100000);
+
+    uint8_t mode = SPI_MODE_0, msb = 0, data = 8;
+    ioctl(fd,SPI_IOC_WR_MODE, &mode);
+    ioctl(fd, SPI_IOC_WR_LSB_FIRST, &msb);
+    ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &data);
 }
 
 void SX126xIoIrqInit( DioIrqHandler dioIrq )
 {
-    wiringPiISR(RADIO_DIO_1, INT_EDGE_RISING, &dioIrq, NULL);
+    wiringPiISR(RADIO_DIO_1, INT_EDGE_RISING, dioIrq, NULL);
     //attachInterrupt(digitalPinToInterrupt(RADIO_DIO_1), dioIrq, RISING );
     //GpioSetInterrupt( &SX126x.DIO1, IRQ_RISING_EDGE, IRQ_HIGH_PRIORITY, dioIrq ); 
 }
@@ -50,6 +61,14 @@ void SX126xIoDeInit( void )
     // GpioInit( &SX126x.Spi.Nss, RADIO_NSS, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_PULL_UP, 1 );
     // GpioInit( &SX126x.BUSY, RADIO_BUSY, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
     // GpioInit( &SX126x.DIO1, RADIO_DIO_1, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
+}
+
+uint8_t SPItransfer(uint8_t dataIn)
+{
+    uint8_t dataOut;
+    write(fd, &dataIn, 1);
+    read(fd, &dataOut, 1);
+    return dataOut;
 }
 
 uint32_t SX126xGetBoardTcxoWakeupTime( void )

@@ -80,14 +80,14 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build/CMakeFiles /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build/CMakeFiles/progress.marks
-	$(MAKE) -f CMakeFiles/Makefile2 all
+	cd /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build/CMakeFiles /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build/app/CMakeFiles/progress.marks
+	cd /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build && $(MAKE) -f CMakeFiles/Makefile2 app/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	$(MAKE) -f CMakeFiles/Makefile2 clean
+	cd /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build && $(MAKE) -f CMakeFiles/Makefile2 app/clean
 .PHONY : clean
 
 # The main clean target
@@ -97,44 +97,60 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	$(MAKE) -f CMakeFiles/Makefile2 preinstall
+	cd /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build && $(MAKE) -f CMakeFiles/Makefile2 app/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	$(MAKE) -f CMakeFiles/Makefile2 preinstall
+	cd /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build && $(MAKE) -f CMakeFiles/Makefile2 app/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
-#=============================================================================
-# Target rules for targets named Tx
+# Convenience name for target.
+app/CMakeFiles/Tx.dir/rule:
+	cd /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build && $(MAKE) -f CMakeFiles/Makefile2 app/CMakeFiles/Tx.dir/rule
+.PHONY : app/CMakeFiles/Tx.dir/rule
 
-# Build rule for target.
-Tx: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 Tx
+# Convenience name for target.
+Tx: app/CMakeFiles/Tx.dir/rule
+
 .PHONY : Tx
 
 # fast build rule for target.
 Tx/fast:
-	$(MAKE) -f app/CMakeFiles/Tx.dir/build.make app/CMakeFiles/Tx.dir/build
+	cd /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build && $(MAKE) -f app/CMakeFiles/Tx.dir/build.make app/CMakeFiles/Tx.dir/build
 .PHONY : Tx/fast
 
-#=============================================================================
-# Target rules for targets named LoraLib
+Tx.o: Tx.c.o
 
-# Build rule for target.
-LoraLib: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 LoraLib
-.PHONY : LoraLib
+.PHONY : Tx.o
 
-# fast build rule for target.
-LoraLib/fast:
-	$(MAKE) -f src/CMakeFiles/LoraLib.dir/build.make src/CMakeFiles/LoraLib.dir/build
-.PHONY : LoraLib/fast
+# target to build an object file
+Tx.c.o:
+	cd /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build && $(MAKE) -f app/CMakeFiles/Tx.dir/build.make app/CMakeFiles/Tx.dir/Tx.c.o
+.PHONY : Tx.c.o
+
+Tx.i: Tx.c.i
+
+.PHONY : Tx.i
+
+# target to preprocess a source file
+Tx.c.i:
+	cd /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build && $(MAKE) -f app/CMakeFiles/Tx.dir/build.make app/CMakeFiles/Tx.dir/Tx.c.i
+.PHONY : Tx.c.i
+
+Tx.s: Tx.c.s
+
+.PHONY : Tx.s
+
+# target to generate assembly for a file
+Tx.c.s:
+	cd /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build && $(MAKE) -f app/CMakeFiles/Tx.dir/build.make app/CMakeFiles/Tx.dir/Tx.c.s
+.PHONY : Tx.c.s
 
 # Help Target
 help:
@@ -145,7 +161,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... Tx"
-	@echo "... LoraLib"
+	@echo "... Tx.o"
+	@echo "... Tx.i"
+	@echo "... Tx.s"
 .PHONY : help
 
 
@@ -157,6 +175,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

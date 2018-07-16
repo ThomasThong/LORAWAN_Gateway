@@ -6,8 +6,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 include_directories(inc)
 
-find_library(wiringPiLIb wiringPi)
+find_library(wiringPiLib wiringPi)
 find_package(Threads REQUIRED)
-add_definitions(-lwiringPi -pthread)
-#add_subdirectory(app)
+add_definitions(-lwiringPi -pthread -lm)
+add_subdirectory(app)
 add_subdirectory(src)

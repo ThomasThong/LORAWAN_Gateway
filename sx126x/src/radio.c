@@ -22,6 +22,7 @@
  */
 #include <math.h>
 #include <string.h>
+#include <stdlib.h>
 //#include "timer.h"
 //#include "delay.h"
 #include <unistd.h>
@@ -420,7 +421,7 @@ bool IrqFired = false;
 /*!
  * \brief DIO 0 IRQ callback
  */
-void RadioOnDioIrq( void );
+void RadioOnDioIrq( void *);
 
 /*!
  * \brief Tx timeout timer callback
@@ -1066,7 +1067,7 @@ void RadioOnRxTimeoutIrq( void )
     }
 }
 
-void RadioOnDioIrq( void )
+void RadioOnDioIrq( void * a)
 {
     IrqFired = true;
 }
