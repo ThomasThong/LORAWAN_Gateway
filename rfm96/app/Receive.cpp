@@ -1,9 +1,12 @@
 #include "LoRa.h"
-LoRaClass LoRa;
 
 int main() {
+  int channel;
   printf("LoRa Receiver\r\n");
+  printf("Choose channel (0 or 1)\r\n");
+  scanf("%d",&channel);
 
+  LoRaClass LoRa(channel);
   if (!LoRa.begin(868000000)) {
     printf("Starting LoRa failed!\r\n");
     while (1);
@@ -30,5 +33,6 @@ int main() {
     printf("' with RSSI ");
     printf("%d \r\n",LoRa.packetRssi());
   }
+  sleep(1);
 }
 }

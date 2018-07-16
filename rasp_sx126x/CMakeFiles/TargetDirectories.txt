@@ -1,3 +1,0 @@
-/home/pi/ThomasThong/rasp_sx126x/CMakeFiles/rebuild_cache.dir
-/home/pi/ThomasThong/rasp_sx126x/CMakeFiles/edit_cache.dir
-/home/pi/ThomasThong/rasp_sx126x/CMakeFiles/test1.dir

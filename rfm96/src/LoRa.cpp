@@ -226,7 +226,7 @@ int LoRaClass::parsePacket(int size)
 {
   int packetLength = 0;
   int irqFlags = readRegister(REG_IRQ_FLAGS);
-
+  //printf ("irq Flag value : %#02x\r\n",irqFlags);
   if (size > 0) {
     implicitHeaderMode();
 
@@ -634,10 +634,12 @@ uint8_t LoRaClass::singleTransfer(uint8_t address, uint8_t value)
   }
   else if (_channel == 1)
   {
+	int delay = 100;
 	uint8_t data = 0;
   	for (int i = 0 ; i < 8 ; ++i)
 	{
 		digitalWrite(_mosi, address & (1<<(7-i)));
+		//printf ("address & bit :%#02x\r\n",address&(1<<(7-i)));
 		digitalWrite(_clk, HIGH);
 
 		uint8_t bval = digitalRead(_miso);
@@ -647,11 +649,13 @@ uint8_t LoRaClass::singleTransfer(uint8_t address, uint8_t value)
 		digitalWrite(_clk,LOW);
 		//printf ("Sending bit%d : %d\r\n",i, (bool)(address&(1<<i)));
 	}
-
+	data = 0;
 	for (int i = 0 ; i < 8 ; ++i)
 	{
-		digitalWrite(_mosi, value & (1<<i));
+		digitalWrite(_mosi, value & (1<<(7-i)));
 		digitalWrite(_clk, HIGH);
+
+		usleep(delay);
 
 		uint8_t bval = digitalRead(_miso);
 		data <<= 1;
@@ -661,7 +665,7 @@ uint8_t LoRaClass::singleTransfer(uint8_t address, uint8_t value)
 
 		digitalWrite(_clk,LOW);
 	}
-	//printf("Receive data : %d\e\n",data);
+	//printf("Receive data : %#02x\r\n",data);
 	response = data;
   }
   digitalWrite(_ss, HIGH);

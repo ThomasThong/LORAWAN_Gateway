@@ -26,8 +26,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <math.h>
-#include "gpio.h"
-#include "spi.h"
+//#include "gpio.h"
+//#include "spi.h"
 #include "radio.h"
 
 #define SX1261                                      1
@@ -655,12 +655,12 @@ typedef union
  */
 typedef struct SX126x_s
 {
-    Gpio_t        Reset;
-    Gpio_t        BUSY;
-    Gpio_t        DIO1;
-    Gpio_t        DIO2;
-    Gpio_t        DIO3;
-    Spi_t         Spi;
+    uint8_t        Reset;
+    uint8_t        BUSY;
+    uint8_t        DIO1;
+    uint8_t        DIO2;
+    uint8_t        DIO3;
+    //Spi_t         Spi;
     PacketParams_t PacketParams;
     PacketStatus_t PacketStatus;
     ModulationParams_t ModulationParams;

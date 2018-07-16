@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/pi/ThomasThong/rasp_sx126x
+CMAKE_SOURCE_DIR = /home/pi/ThomasThong/LORAWAN_Gateway/sx126x
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/pi/ThomasThong/rasp_sx126x
+CMAKE_BINARY_DIR = /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/ThomasThong/rasp_sx126x/CMakeFiles /home/pi/ThomasThong/rasp_sx126x/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build/CMakeFiles /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/ThomasThong/rasp_sx126x/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -111,98 +111,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named test1
+# Target rules for targets named LoraLib
 
 # Build rule for target.
-test1: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test1
-.PHONY : test1
+LoraLib: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 LoraLib
+.PHONY : LoraLib
 
 # fast build rule for target.
-test1/fast:
-	$(MAKE) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/build
-.PHONY : test1/fast
-
-src/radio.o: src/radio.c.o
-
-.PHONY : src/radio.o
-
-# target to build an object file
-src/radio.c.o:
-	$(MAKE) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/src/radio.c.o
-.PHONY : src/radio.c.o
-
-src/radio.i: src/radio.c.i
-
-.PHONY : src/radio.i
-
-# target to preprocess a source file
-src/radio.c.i:
-	$(MAKE) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/src/radio.c.i
-.PHONY : src/radio.c.i
-
-src/radio.s: src/radio.c.s
-
-.PHONY : src/radio.s
-
-# target to generate assembly for a file
-src/radio.c.s:
-	$(MAKE) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/src/radio.c.s
-.PHONY : src/radio.c.s
-
-src/sx1261dvk1bas-board.o: src/sx1261dvk1bas-board.c.o
-
-.PHONY : src/sx1261dvk1bas-board.o
-
-# target to build an object file
-src/sx1261dvk1bas-board.c.o:
-	$(MAKE) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/src/sx1261dvk1bas-board.c.o
-.PHONY : src/sx1261dvk1bas-board.c.o
-
-src/sx1261dvk1bas-board.i: src/sx1261dvk1bas-board.c.i
-
-.PHONY : src/sx1261dvk1bas-board.i
-
-# target to preprocess a source file
-src/sx1261dvk1bas-board.c.i:
-	$(MAKE) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/src/sx1261dvk1bas-board.c.i
-.PHONY : src/sx1261dvk1bas-board.c.i
-
-src/sx1261dvk1bas-board.s: src/sx1261dvk1bas-board.c.s
-
-.PHONY : src/sx1261dvk1bas-board.s
-
-# target to generate assembly for a file
-src/sx1261dvk1bas-board.c.s:
-	$(MAKE) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/src/sx1261dvk1bas-board.c.s
-.PHONY : src/sx1261dvk1bas-board.c.s
-
-src/sx126x.o: src/sx126x.c.o
-
-.PHONY : src/sx126x.o
-
-# target to build an object file
-src/sx126x.c.o:
-	$(MAKE) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/src/sx126x.c.o
-.PHONY : src/sx126x.c.o
-
-src/sx126x.i: src/sx126x.c.i
-
-.PHONY : src/sx126x.i
-
-# target to preprocess a source file
-src/sx126x.c.i:
-	$(MAKE) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/src/sx126x.c.i
-.PHONY : src/sx126x.c.i
-
-src/sx126x.s: src/sx126x.c.s
-
-.PHONY : src/sx126x.s
-
-# target to generate assembly for a file
-src/sx126x.c.s:
-	$(MAKE) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/src/sx126x.c.s
-.PHONY : src/sx126x.c.s
+LoraLib/fast:
+	$(MAKE) -f src/CMakeFiles/LoraLib.dir/build.make src/CMakeFiles/LoraLib.dir/build
+.PHONY : LoraLib/fast
 
 # Help Target
 help:
@@ -212,16 +131,7 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... test1"
-	@echo "... src/radio.o"
-	@echo "... src/radio.i"
-	@echo "... src/radio.s"
-	@echo "... src/sx1261dvk1bas-board.o"
-	@echo "... src/sx1261dvk1bas-board.i"
-	@echo "... src/sx1261dvk1bas-board.s"
-	@echo "... src/sx126x.o"
-	@echo "... src/sx126x.i"
-	@echo "... src/sx126x.s"
+	@echo "... LoraLib"
 .PHONY : help
 
 

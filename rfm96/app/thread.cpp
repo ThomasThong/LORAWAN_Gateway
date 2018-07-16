@@ -59,7 +59,7 @@ int main()
  	 config[i].SF = 12;
  	 config[i].PreambleLength = 8;
   }
-  config[1].Freq = 868100000;
+  config[1].Freq = 868500000;
   pthread_t thrs[NUMTHREADS];
 
   for (int i = 0 ; i < NUMTHREADS; ++i)
