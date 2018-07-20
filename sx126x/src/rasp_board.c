@@ -20,6 +20,7 @@
  *
  * \author    Gregory Cristian ( Semtech )
  */
+#include <stdio.h>
 #include <stdlib.h>
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
@@ -40,10 +41,18 @@ void SX126xIoInit( void )
     pinMode(RADIO_NSS, OUTPUT);
     pinMode(RADIO_BUSY, INPUT);
     pinMode(RADIO_DIO_1, INPUT);
+    //pullUpDnControl(RADIO_RESET, PUD_DOWN);
+    pullUpDnControl(RADIO_NSS, PUD_UP);
+    pullUpDnControl(RADIO_DIO_1, PUD_DOWN);
+    digitalWrite(RADIO_NSS, HIGH);
 
     fd = wiringPiSPISetup(CHANNEL, 100000);
-
-    uint8_t mode = SPI_MODE_0, msb = 0, data = 8;
+    if (fd < 0 )
+    {
+	printf("can't init SPI\r\n");
+        while(1);
+    }
+    uint8_t mode = SPI_MODE_0, msb = 0, data = 0;
     ioctl(fd,SPI_IOC_WR_MODE, &mode);
     ioctl(fd, SPI_IOC_WR_LSB_FIRST, &msb);
     ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &data);
@@ -66,8 +75,16 @@ void SX126xIoDeInit( void )
 uint8_t SPItransfer(uint8_t dataIn)
 {
     uint8_t dataOut;
-    write(fd, &dataIn, 1);
-    read(fd, &dataOut, 1);
+    //write(fd, &dataIn, 1);
+    //usleep(10);
+    //read(fd, &dataOut, 1);
+    printf("sending : %#02x\r\n",dataIn);
+    wiringPiSPIDataRW(0,&dataIn,1);
+    dataOut = dataIn;
+    if (dataOut == 0)
+	printf("receive :     NONE\r\n");
+    else
+    	printf("receive : %#02x\r\n",dataOut);
     return dataOut;
 }
 
@@ -80,16 +97,18 @@ void SX126xReset( void )
 {
     usleep( 10000 );
     pinMode(RADIO_RESET,OUTPUT);
+    digitalWrite(RADIO_RESET, LOW);
     //GpioInit( &SX126x.Reset, RADIO_RESET, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
     usleep( 10000 );
-    pinMode(RADIO_RESET,INPUT);
+    digitalWrite(RADIO_RESET, HIGH);
+    //pinMode(RADIO_RESET,INPUT);
     //GpioInit( &SX126x.Reset, RADIO_RESET, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 ); // internal pull-up
     usleep( 10000 );
 }
 
 void SX126xWaitOnBusy( void )
 {
-  usleep(2000);
+  usleep(20000);
     //while(digitalRead(RADIO_BUSY) == HIGH);
     //while( GpioRead( &SX126x.BUSY ) == 1 );
 }

@@ -1,7 +1,7 @@
-#include "radio.h" 
-#include "sx126x-board.h" 
-#include "sx126x.h" 
-#include <wiringPi.h> 
+#include "radio.h"
+#include "sx126x-board.h"
+#include "sx126x.h"
+#include <wiringPi.h>
 #include "stdio.h"
 
 #define LED 9
@@ -27,8 +27,7 @@
 #define TX_OUTPUT_POWER                             12
 static RadioEvents_t RadioEvents;
 void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr );
-void OnTxDone(void);
-void OnTxTimeout(void);
+void OnRxTimeout(void);
 uint8_t packet[] = {'h','e','l','l','o'};
 
 RadioStatus_t status;
@@ -41,37 +40,31 @@ int main(){
   pinMode(LED,OUTPUT);
   printf("Begin\r\n");
   
-  printf("Sx126x Calibrate image \r\n");
   SX126xCalibrateImage(868000000);
   CalibrationParams_t calibParam;
 
-  printf("sx126x Calibrate\r\n");
   calibParam.Value = 0x7F;
   SX126xCalibrate( calibParam );
 
-  RadioEvents.TxDone = OnTxDone;
-  RadioEvents.TxTimeout = OnTxTimeout;
+  RadioEvents.RxDone = OnRxDone;
+  RadioEvents.RxTimeout = OnRxTimeout;
 
-  printf("Init event\r\n");
   Radio.Init( &RadioEvents );
+  printf("Init events\r\n");
   
-  printf("set rf frequency \r\n");
   Radio.SetChannel( RF_FREQUENCY );
-  //printf("Set rf frequency\r\n");
+  printf("Set rf frequency\r\n");
 
-  printf ("set public network\r\n");
   Radio.SetPublicNetwork(true);
   
-  printf ("set Tx Config\r\n");
-  Radio.SetTxConfig( MODEM_LORA, TX_OUTPUT_POWER, 0, LORA_BANDWIDTH,
-                                   LORA_SPREADING_FACTOR, LORA_CODINGRATE,
-                                   LORA_PREAMBLE_LENGTH, LORA_FIX_LENGTH_PAYLOAD_ON,
-                                   true, 0, 0, LORA_IQ_INVERSION_ON, 3000000 );
-  //printf("Set Tx config\r\n");
+  Radio.SetRxConfig( MODEM_LORA, LORA_BANDWIDTH, LORA_SPREADING_FACTOR,
+                     LORA_CODINGRATE, 0, LORA_PREAMBLE_LENGTH, 
+                     LORA_SYMBOL_TIMEOUT, LORA_FIX_LENGTH_PAYLOAD_ON,
+                     0, 1, 0, 0, LORA_IQ_INVERSION_ON, 1);
+  printf("Set Rx config\r\n");
 
-  printf ("Send\r\n");
-  Radio.Send(packet,5);
-  //printf("Sent\r\n");
+  //Radio.Rx(0);
+  printf("Receive\r\n");
 
   while(1)
   {
@@ -81,18 +74,22 @@ int main(){
   }
 }
   
-void OnTxDone(void)
+void OnRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr)
 {
-  digitalWrite(LED,HIGH);
-  delay(2000);
-  printf("tx finish\r\n");
-  Radio.Send(packet,5);
-  digitalWrite(LED,LOW);
+  printf("Rx finish\r\n");
+  printf("Packet size %d : ", size);
+  for (int i  = 0; i < size; ++i)
+	printf ("%c",payload[i]);
+
+  printf ("\r\n");
+  printf ("RSSI : %d, SNR: %d\r\n", rssi, snr);
+  //Radio.Rx(0);
 }
 
-void OnTxTimeout()
+void OnRxTimeout()
 {
-  printf("tx timeout\r\n");
+  printf("rx timeout\r\n");
+  //Radio.Rx(0);
 }
 
 

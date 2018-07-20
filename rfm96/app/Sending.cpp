@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string.h>
 
-LoRaClass LoRa ;
+LoRaClass LoRa(1) ;
 
 int main()
 {
@@ -18,6 +18,7 @@ int main()
   LoRa.setCodingRate4(5);
   LoRa.setSpreadingFactor(12); 
   LoRa.setPreambleLength(8);
+  LoRa.setSyncWord(0x24);
 
   char number[3] ;
   while (1)
@@ -33,7 +34,7 @@ int main()
 
   counter++;
 
-  sleep(5);
+  sleep(1);
 }
   return 0;
 }

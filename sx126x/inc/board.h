@@ -33,20 +33,19 @@
 /*!
  * Board MCU pins definitions
  */
-#define RADIO_RESET                                 8                       
+#define RADIO_RESET                                 21
 
 #define RADIO_MOSI                                  11
 #define RADIO_MISO                                  12
 #define RADIO_SCLK                                  13
-#define RADIO_NSS                                   10
+#define RADIO_NSS                                   30
 #define RADIO_BUSY                                  6
-                                
-#define RADIO_DIO_1                                 2
-#define RADIO_DIO_2                                 
-#define RADIO_DIO_3                                 7                            
-                                
 
-#define RADIO_DEVICE_SEL                            
+#define RADIO_DIO_1                                 22
+#define RADIO_DIO_2
+#define RADIO_DIO_3                                 
+
+#define RADIO_DEVICE_SEL
 
 
 /*!

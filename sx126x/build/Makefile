@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named Rx
+
+# Build rule for target.
+Rx: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 Rx
+.PHONY : Rx
+
+# fast build rule for target.
+Rx/fast:
+	$(MAKE) -f app/CMakeFiles/Rx.dir/build.make app/CMakeFiles/Rx.dir/build
+.PHONY : Rx/fast
+
+#=============================================================================
 # Target rules for targets named Tx
 
 # Build rule for target.
@@ -144,6 +157,7 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... Rx"
 	@echo "... Tx"
 	@echo "... LoraLib"
 .PHONY : help

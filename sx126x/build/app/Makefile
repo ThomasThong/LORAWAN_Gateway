@@ -111,6 +111,21 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
+app/CMakeFiles/Rx.dir/rule:
+	cd /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build && $(MAKE) -f CMakeFiles/Makefile2 app/CMakeFiles/Rx.dir/rule
+.PHONY : app/CMakeFiles/Rx.dir/rule
+
+# Convenience name for target.
+Rx: app/CMakeFiles/Rx.dir/rule
+
+.PHONY : Rx
+
+# fast build rule for target.
+Rx/fast:
+	cd /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build && $(MAKE) -f app/CMakeFiles/Rx.dir/build.make app/CMakeFiles/Rx.dir/build
+.PHONY : Rx/fast
+
+# Convenience name for target.
 app/CMakeFiles/Tx.dir/rule:
 	cd /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build && $(MAKE) -f CMakeFiles/Makefile2 app/CMakeFiles/Tx.dir/rule
 .PHONY : app/CMakeFiles/Tx.dir/rule
@@ -124,6 +139,33 @@ Tx: app/CMakeFiles/Tx.dir/rule
 Tx/fast:
 	cd /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build && $(MAKE) -f app/CMakeFiles/Tx.dir/build.make app/CMakeFiles/Tx.dir/build
 .PHONY : Tx/fast
+
+Rx.o: Rx.c.o
+
+.PHONY : Rx.o
+
+# target to build an object file
+Rx.c.o:
+	cd /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build && $(MAKE) -f app/CMakeFiles/Rx.dir/build.make app/CMakeFiles/Rx.dir/Rx.c.o
+.PHONY : Rx.c.o
+
+Rx.i: Rx.c.i
+
+.PHONY : Rx.i
+
+# target to preprocess a source file
+Rx.c.i:
+	cd /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build && $(MAKE) -f app/CMakeFiles/Rx.dir/build.make app/CMakeFiles/Rx.dir/Rx.c.i
+.PHONY : Rx.c.i
+
+Rx.s: Rx.c.s
+
+.PHONY : Rx.s
+
+# target to generate assembly for a file
+Rx.c.s:
+	cd /home/pi/ThomasThong/LORAWAN_Gateway/sx126x/build && $(MAKE) -f app/CMakeFiles/Rx.dir/build.make app/CMakeFiles/Rx.dir/Rx.c.s
+.PHONY : Rx.c.s
 
 Tx.o: Tx.c.o
 
@@ -160,7 +202,11 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... Rx"
 	@echo "... Tx"
+	@echo "... Rx.o"
+	@echo "... Rx.i"
+	@echo "... Rx.s"
 	@echo "... Tx.o"
 	@echo "... Tx.i"
 	@echo "... Tx.s"

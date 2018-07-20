@@ -23,6 +23,7 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 //#include "timer.h"
 //#include "delay.h"
 #include <unistd.h>
@@ -499,14 +500,17 @@ void RadioInit( RadioEvents_t *events )
 {
     RadioEvents = events;
 
-    SX126xInit( RadioOnDioIrq );
+    SX126xInit( &RadioOnDioIrq );
+    printf("set stanby\r\n");
     SX126xSetStandby( STDBY_RC );
+    printf ("set regulatorMode\r\n");
     SX126xSetRegulatorMode( USE_DCDC );
 
     SX126xSetBufferBaseAddress( 0x00, 0x00 );
     SX126xSetTxParams( 0, RADIO_RAMP_200_US );
     SX126xSetDioIrqParams( IRQ_RADIO_ALL, IRQ_RADIO_ALL, IRQ_RADIO_NONE, IRQ_RADIO_NONE );
 
+    SX126xSetDio2AsRfSwitchCtrl(true);
     // Initialize driver timeout timers
     //TimerInit( &TxTimeoutTimer, RadioOnTxTimeoutIrq );
     //TimerInit( &RxTimeoutTimer, RadioOnRxTimeoutIrq );
@@ -1070,6 +1074,8 @@ void RadioOnRxTimeoutIrq( void )
 void RadioOnDioIrq( void * a)
 {
     IrqFired = true;
+    printf("inside interrupt\r\n");
+    RadioIrqProcess();
 }
 
 void RadioIrqProcess( void )

@@ -84,10 +84,13 @@ void SX126xProcessIrqs( void );
 
 void SX126xInit( DioIrqHandler dioIrq )
 {
+    printf ("reset\r\n");
     SX126xReset( );
 
+    printf ("Sx126x Io irq inti\r\n");
     SX126xIoIrqInit( dioIrq );
 
+    printf ("Sx126x wakeup\r\n");
     SX126xWakeup( );
     SX126xSetStandby( STDBY_RC );
 
@@ -99,7 +102,7 @@ void SX126xInit( DioIrqHandler dioIrq )
     SX126xCalibrate( calibParam );
 #endif
 
-    SX126xSetDio2AsRfSwitchCtrl( true );
+    //SX126xSetDio2AsRfSwitchCtrl( true );
     OperatingMode = MODE_STDBY_RC;
 }
 
