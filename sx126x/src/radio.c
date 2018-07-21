@@ -872,10 +872,13 @@ uint32_t RadioTimeOnAir( RadioModems_t modem, uint8_t pktLen )
 
 void RadioSend( uint8_t *buffer, uint8_t size )
 {
+#ifdef DEBUG
+    printf ("set irq register for sending\r\n");
+#endif
     SX126xSetDioIrqParams( IRQ_TX_DONE | IRQ_RX_TX_TIMEOUT,
                            IRQ_TX_DONE | IRQ_RX_TX_TIMEOUT,
                            IRQ_RADIO_NONE,
-                           IRQ_RADIO_NONE );
+                           IRQ_TX_DONE | IRQ_RX_TX_TIMEOUT );
 
     if( SX126xGetPacketType( ) == PACKET_TYPE_LORA )
     {

@@ -34,7 +34,7 @@ int main()
 
   counter++;
 
-  sleep(1);
+  usleep(1000);
 }
   return 0;
 }

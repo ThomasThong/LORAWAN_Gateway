@@ -43,7 +43,7 @@
 
 #define RADIO_DIO_1                                 22
 #define RADIO_DIO_2
-#define RADIO_DIO_3                                 
+#define RADIO_DIO_3                                 22
 
 #define RADIO_DEVICE_SEL
 

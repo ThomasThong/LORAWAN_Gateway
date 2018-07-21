@@ -5,10 +5,10 @@ int main() {
   printf("LoRa Receiver\r\n");
   printf("Choose channel (0 or 1)\r\n");
   scanf("%d",&channel);
-  printf("Choose fre\r\n");
-  scanf("%d", &freq);
+  //printf("Choose fre\r\n");
+  //scanf("%d", &freq);
   LoRaClass LoRa(channel);
-  if (!LoRa.begin(freq)) {
+  if (!LoRa.begin(868000000)) {
     printf("Starting LoRa failed!\r\n");
     while (1);
   }

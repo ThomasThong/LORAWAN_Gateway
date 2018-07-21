@@ -4,6 +4,7 @@
 #include <wiringPi.h> 
 #include "stdio.h"
 
+//#define DEBUG
 #define LED 9
 
 #define USE_MODEM_LORA
@@ -24,7 +25,7 @@
 #define LORA_FIX_LENGTH_PAYLOAD_ON                  false
 #define LORA_IQ_INVERSION_ON                        false
 
-#define TX_OUTPUT_POWER                             12
+#define TX_OUTPUT_POWER                             15
 static RadioEvents_t RadioEvents;
 void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr );
 void OnTxDone(void);
@@ -61,7 +62,7 @@ int main(){
 
   printf ("set public network\r\n");
   Radio.SetPublicNetwork(true);
-  
+  /*
   printf ("set Tx Config\r\n");
   Radio.SetTxConfig( MODEM_LORA, TX_OUTPUT_POWER, 0, LORA_BANDWIDTH,
                                    LORA_SPREADING_FACTOR, LORA_CODINGRATE,
@@ -69,14 +70,21 @@ int main(){
                                    true, 0, 0, LORA_IQ_INVERSION_ON, 3000000 );
   //printf("Set Tx config\r\n");
 
+  SX126xSetDio2AsRfSwitchCtrl(true);
+
   printf ("Send\r\n");
   Radio.Send(packet,5);
+*/
+  SX126xSetDio2AsRfSwitchCtrl(true);
+  Radio.SetTxContinuousWave(RF_FREQUENCY, TX_OUTPUT_POWER, 10);
+  
   //printf("Sent\r\n");
-
   while(1)
   {
     Interrupt = SX126xGetIrqStatus();
     printf("interrupt in main :%#02x\r\n",Interrupt);
+    error = SX126xGetDeviceErrors();
+    printf("device error : %#02x\r\n", error.Value);
     delay(2000);
   }
 }
@@ -93,6 +101,7 @@ void OnTxDone(void)
 void OnTxTimeout()
 {
   printf("tx timeout\r\n");
+  Radio.SetTxContinuousWave(RF_FREQUENCY, TX_OUTPUT_POWER, 10);
 }
 
 

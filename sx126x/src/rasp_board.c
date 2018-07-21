@@ -78,13 +78,17 @@ uint8_t SPItransfer(uint8_t dataIn)
     //write(fd, &dataIn, 1);
     //usleep(10);
     //read(fd, &dataOut, 1);
+#ifdef DEBUG
     printf("sending : %#02x\r\n",dataIn);
+#endif
     wiringPiSPIDataRW(0,&dataIn,1);
     dataOut = dataIn;
+#ifdef DEBUG
     if (dataOut == 0)
 	printf("receive :     NONE\r\n");
     else
     	printf("receive : %#02x\r\n",dataOut);
+#endif
     return dataOut;
 }
 
