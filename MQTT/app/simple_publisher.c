@@ -10,12 +10,19 @@
 
 #include <mqtt.h>
 #include "templates/posix_sockets.h"
-
+/*
 #define MQTTSERVER "m11.cloudmqtt.com"
 #define PORT 	   "12234"
 #define USER       "esp8266"
 #define PASS       "123456789@"
 #define TOPIC      "demo"
+*/
+
+#define MQTTSERVER "wirelesstech.online"
+#define PORT 	   "1883"
+#define USER       "root"
+#define PASS       "1234567"
+#define TOPIC      "lora/test"
 /**
  * @brief The function that would be called whenever a PUBLISH is received.
  * 

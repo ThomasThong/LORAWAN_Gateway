@@ -45,3 +45,6 @@ CTestTestfile.cmake
 rfm96/build/*
 rfm96/bin/*
 rfm96/lib/*
+*/bin/*
+*/build/*
+*/lib/*
